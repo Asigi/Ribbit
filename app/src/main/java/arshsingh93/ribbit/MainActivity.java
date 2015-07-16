@@ -1,25 +1,29 @@
 package arshsingh93.ribbit;
 
-import java.util.Locale;
-
+import android.app.ActionBar;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements ActionBar.TabListener {
+import com.parse.ParseAnalytics;
+import com.parse.ParseUser;
+
+import java.util.Locale;
+
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
+
+    public static final String TAG = MainActivity.class.getSimpleName();
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -41,14 +45,17 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ParseAnalytics.trackAppOpenedInBackground(getIntent());
 
-        Intent intent = new Intent(this,LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK); //this prevents you from getting back to the previous page.
-        startActivity(intent);
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser == null) {
+            navigateToLogin();
+        } else {
+            Log.i(TAG, currentUser.getUsername());
+        }
 
         // Set up the action bar.
-        final ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Create the adapter that will return a fragment for each of the three
@@ -82,6 +89,13 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         }
     }
 
+    private void navigateToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK); //this prevents you from getting back to the previous page.
+        startActivity(intent);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -92,32 +106,35 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        int itemId = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if(itemId == R.id.action_logout) {
+            ParseUser.logOut();
+            navigateToLogin();
+        }
+        /**
+        if (itemId == R.id.action_settings) {
             return true;
         }
+         **/
 
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
+    public void onTabSelected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
+
     }
 
     @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
+
     }
 
     @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
+
     }
 
     /**

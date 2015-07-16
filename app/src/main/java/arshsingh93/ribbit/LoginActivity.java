@@ -1,23 +1,39 @@
 package arshsingh93.ribbit;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
+    protected EditText myUsername;
+    protected EditText myPassword;
+    protected Button myLoginButton;
+    protected ProgressBar myProgressBar;
+
     protected TextView mySignUpTextView;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_login);
-
 
         mySignUpTextView = (TextView) findViewById(R.id.signupText);
         mySignUpTextView.setOnClickListener(new View.OnClickListener() {
@@ -28,7 +44,56 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        myProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        myProgressBar.setVisibility(View.INVISIBLE); //originally not seen
 
+        myUsername = (EditText) findViewById(R.id.usernameField);
+        myPassword = (EditText) findViewById(R.id.passwordField);
+        myLoginButton = (Button) findViewById(R.id.loginButton);
+        myLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = myUsername.getText().toString();
+                String password = myPassword.getText().toString();
+
+                username = username.trim();
+                password = password.trim();
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                    builder.setMessage(R.string.login_error_message)
+                            .setTitle(R.string.login_error_title)
+                            .setPositiveButton(android.R.string.ok, null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else {
+                    //login
+                    toggleRefresh();
+                    ParseUser.logInInBackground(username, password, new LogInCallback() {
+                        @Override
+                        public void done(ParseUser parseUser, ParseException e) {
+                            toggleRefresh();
+                            if (e == null) {
+                                //success
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+
+                            } else {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                                builder.setMessage(e.getMessage())
+                                        .setTitle(R.string.login_error_title)
+                                        .setPositiveButton(android.R.string.ok, null);
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                            }
+                        }
+                    });
+                }
+
+            }
+        });
 
     }
 
@@ -52,5 +117,15 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+    private void toggleRefresh() {
+        if(myProgressBar.getVisibility() == View.INVISIBLE) {
+            myProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            myProgressBar.setVisibility(View.INVISIBLE);
+        }
     }
 }

@@ -3,6 +3,7 @@ package arshsingh93.ribbit;
 import android.app.Application;
 
 import com.parse.Parse;
+import com.parse.ParseObject;
 
 /**
  * Created by Student on 7/14/2015.
@@ -13,14 +14,10 @@ public class RibbitApplication extends Application{
     public void onCreate(){
         super.onCreate();
         Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "2i0CNaI5uozJ7BCGXMpfr1yucrJkYlPpg207wM4N",
-                "WtMn4uEQKXobFnNYasRsPKtiADfiyS9AVtE5gKQ6");
+        Parse.initialize(this, "OvaAJNmtL8azu4qpxbMyd4tXDVr8NYqJSSMnzeJ1",
+                "J1IfxTcTET9cq4aabh8DEhh45RG8k6RvAxFGeBdi");
 
     }
-
-
-
-
 
 
 

@@ -49,4 +49,13 @@
         android:id="@+id/signupButton"
         android:layout_below="@+id/emailField"
         android:layout_centerHorizontal="true" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/signUpProgressBar"
+        android:layout_below="@+id/signupButton"
+        android:layout_centerHorizontal="true"
+        android:indeterminate="false" />
 </RelativeLayout>
